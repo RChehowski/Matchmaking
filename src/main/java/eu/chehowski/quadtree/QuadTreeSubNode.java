@@ -52,14 +52,35 @@ public final class QuadTreeSubNode<T extends QuadTreeItem<T>> extends AbstractQu
     }
 
     @Override
-    public final QuadTreeNode<T> subdivide(QuadTreeDirection direction)
+    public final QuadTreeNode<T> subdivide(final QuadTreeDirection direction)
     {
         // Check if already subdivided
         QuadTreeNode<T> child = getChild(direction);
 
-        while (!child.isLeaf())
+        while (!(child instanceof QuadTreeSubNode))
         {
-            final QuadTreeSubNode<T> subNode = new QuadTreeSubNode<>();
+            final QuadTreeNode<T> subNode = new QuadTreeSubNode<>();
+            switch (direction)
+            {
+                case NW: nwFU.weakCompareAndSet(this, child, subNode); break;
+                case NE: neFU.weakCompareAndSet(this, child, subNode); break;
+                case SW: swFU.weakCompareAndSet(this, child, subNode); break;
+                case SE: seFU.weakCompareAndSet(this, child, subNode); break;
+            }
+            child = getChild(direction);
+        }
+
+        return child;
+    }
+
+    @Override
+    public QuadTreeNode<T> getLeaf(final QuadTreeDirection direction)
+    {
+        QuadTreeNode<T> child = getChild(direction);
+
+        while (!(child instanceof QuadTreeLeafNode))
+        {
+            final QuadTreeNode<T> subNode = new QuadTreeLeafNode<>();
             switch (direction)
             {
                 case NW: nwFU.weakCompareAndSet(this, child, subNode); break;

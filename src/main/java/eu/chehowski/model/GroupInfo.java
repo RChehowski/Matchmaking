@@ -1,7 +1,6 @@
 package eu.chehowski.model;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
-import eu.chehowski.util.KahanAverage;
 
 import java.time.Instant;
 import java.util.Collection;

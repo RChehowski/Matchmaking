@@ -31,6 +31,8 @@ public interface QuadTreeNode<T extends QuadTreeItem<T>>
 
     QuadTreeNode<T> subdivide(final QuadTreeDirection direction);
 
+    QuadTreeNode<T> getLeaf(final QuadTreeDirection direction);
+
     /**
      * Returns the collection of items in this quad tree node. Always returns an empty collection for non-leaf
      * nodes.
@@ -59,5 +61,4 @@ public interface QuadTreeNode<T extends QuadTreeItem<T>>
     {
         return 0;
     }
-
 }

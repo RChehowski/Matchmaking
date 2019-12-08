@@ -1,8 +1,5 @@
 package eu.chehowski.quadtree;
 
-import java.util.Collection;
-import java.util.Collections;
-
 /**
  *
  * @param <T>
@@ -40,6 +37,11 @@ public final class QuadTreeEmptyNode<T extends QuadTreeItem<T>> implements QuadT
         return null;
     }
 
+    @Override
+    public QuadTreeNode<T> getLeaf(QuadTreeDirection direction)
+    {
+        return null;
+    }
 
     @SuppressWarnings("unchecked")
     public static <T extends QuadTreeItem<T>> QuadTreeNode<T> emptyNode()

@@ -2,8 +2,6 @@ package eu.chehowski.quadtree;
 
 import eu.chehowski.annotations.ThreadSafe;
 
-import java.util.Collection;
-import java.util.Collections;
 import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 
 /**

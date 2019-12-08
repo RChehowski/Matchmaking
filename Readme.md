@@ -10,21 +10,21 @@ The group then got printed to the `stdout`.
 
 
 ### The approach
-I'm pretty sure that it was a good idea to combine the entire list of sophisticated player parameters such as `[strength, endurance, resistance, experience, win_rate]` into the one named `skill`.
+I'm pretty sure that it was a good idea to combine the entire list of sophisticated player parameters such as `[strength, endurance, resistance, experience, win_rate]` into the weighted one named `skill`.
 `latency`, however, does not depend on `skill`, so we'd better not combine them into one.
-So if we had **two** parameters and we need to look through them, the best possible and the most obvious *for me* way is to construct a lookup structure, where it will be easy to perform such operation.
-By the way, one may use a simple `sqrt(`(x<sub>1</sub>-x<sub>2</sub>)<sup>2</sup>+(y<sub>1</sub>-y<sub>2</sub>)<sup>2</sup>`)` formula to calculate the distance between two points, but this will require as many as **O**(N<sup>2</sup>) operations, where **N** is the amount of players enqueued.
+So if we have **two** parameters and we need to look through them, the best possible and the most obvious *for me* way is to construct a lookup structure, where it will be easy to perform such operation.
+By the way, one may use a simple sqrt((x<sub>1</sub>-x<sub>2</sub>)<sup>2</sup>+(y<sub>1</sub>-y<sub>2</sub>)<sup>2</sup>) formula to calculate the distance between two points, but this will require as many as **O**(N<sup>2</sup>) operations, where **N** is the amount of players enqueued.
 
-> The optimized version of this brute approach may work as fast as *O*(N), but it will require extra memory to implement some technique, such as the [card table](https://msdnshared.blob.core.windows.net/media/TNBlogsFS/BlogFileStorage/blogs_msdn/abhinaba/WindowsLiveWriter/BackToBasicsGenerationalGarbageCollectio_115F4/image_18.png) to look through data to know the load weight of a certain part of space. 
+> The optimized version of this brute comparison approach may work as fast as **O**(**N**), but it will require extra memory to implement some technique, such as the [card table](https://msdnshared.blob.core.windows.net/media/TNBlogsFS/BlogFileStorage/blogs_msdn/abhinaba/WindowsLiveWriter/BackToBasicsGenerationalGarbageCollectio_115F4/image_18.png) to look through data to know the load weight of a certain part of space. 
 
 As for the experienced *game engine programmer*, I know that [Quad Trees](https://en.wikipedia.org/wiki/Quadtree) as the special case of [KD-trees](https://en.wikipedia.org/wiki/K-d_tree) could be used on such purpose.
 
-> One may also use **N**-dimensional trees to manage **N**-dimensional points placed in cubes or tesseracts instead of 2D surfaces.
+> One may also use **N**-dimensional trees to manage **N**-dimensional objects placed inside cubes or hypercubes instead of 2D surfaces.
 
 <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8b/Point_quadtree.svg/1024px-Point_quadtree.svg.png" alt="drawing" width="400"/>
 
-The idea is to construct a quad tree and connect a simple atomic counter to each its node, representing the amount of records in the certain part of 2D space.
-Then you may simply compare counter values to determine the most load part of space to take from that part first to make results more uniform.
+The idea is to construct a quad tree and connect a simple atomic counter to each its node at each its level, representing the amount of records in the certain part of 2D space.
+Then you may simply compare counter values to determine the most loaded part of 2D space to take from that part first to make results more uniform.
 
 The approaches that could be used further to find other players:
 1. [The nearest neighbor algorithm](https://ericandrewlewis.github.io/how-a-quadtree-works/) might be used to find **K** geometrically closest points in the quad-tree. This **increases** lookup quality, but also **increases** search time and makes concurrent lookup more difficult.

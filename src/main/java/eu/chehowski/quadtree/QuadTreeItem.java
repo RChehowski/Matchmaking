@@ -1,7 +1,5 @@
 package eu.chehowski.quadtree;
 
-import eu.chehowski.model.PlayerInfo;
-
 public interface QuadTreeItem<T>
 {
     float getX();

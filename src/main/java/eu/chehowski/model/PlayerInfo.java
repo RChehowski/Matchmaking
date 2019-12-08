@@ -4,8 +4,6 @@ import com.fasterxml.jackson.annotation.JsonGetter;
 import eu.chehowski.quadtree.QuadTreeItem;
 
 import java.time.Instant;
-import java.util.Calendar;
-import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 
 public final class PlayerInfo implements QuadTreeItem<PlayerInfo>
 {

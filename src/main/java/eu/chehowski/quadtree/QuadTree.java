@@ -20,9 +20,6 @@ public class QuadTree<T extends QuadTreeItem<T>>
 
     private final int maxSubDiv;
 
-    private final List<QuadTreeNode<?>> depthSearchStack;
-
-
     private volatile QuadTreeNode<T> root = QuadTreeEmptyNode.emptyNode();
 
     private static final AtomicReferenceFieldUpdater<QuadTree, QuadTreeNode> rootFU =
@@ -48,7 +45,6 @@ public class QuadTree<T extends QuadTreeItem<T>>
         final int maxSubDivY = (int) (Math.log(Math.ceil(height)) / Math.log(2));
 
         this.maxSubDiv = Math.max(maxSubDivX, maxSubDivY);
-        this.depthSearchStack = new ArrayList<>();
     }
 
 
@@ -59,7 +55,7 @@ public class QuadTree<T extends QuadTreeItem<T>>
 
         if (previousRoot.isDummy())
         {
-            final QuadTreeNode<T> newRoot = new QuadTreeLeafNode<>();
+            final QuadTreeNode<T> newRoot = new QuadTreeSubNode<>();
 
             // root is already updated if the check failed
             rootFU.compareAndSet(this, previousRoot, newRoot);
@@ -95,24 +91,35 @@ public class QuadTree<T extends QuadTreeItem<T>>
         final float itemX = item.getX();
         final float itemY = item.getY();
 
-        if (x < halfW)
-            return y < halfH ? QuadTreeDirection.SW : QuadTreeDirection.NW;
+        if (itemX < (x + halfW))
+        {
+            return (itemY < (y + halfW)) ? QuadTreeDirection.SW : QuadTreeDirection.NW;
+        }
         else
-            return y < halfH ? QuadTreeDirection.SE : QuadTreeDirection.NE;
+        {
+            return (itemY < (y + halfW)) ? QuadTreeDirection.SE : QuadTreeDirection.NE;
+        }
+
+//        if (x < halfW)
+//            return y < halfH ? QuadTreeDirection.SW : QuadTreeDirection.NW;
+//        else
+//            return y < halfH ? QuadTreeDirection.SE : QuadTreeDirection.NE;
     }
 
-    private boolean takeItemsFromNode(final Queue<T> source, final QuadTreeNode<T> node, final int requiredAmount)
+    private boolean takeItemsFromNode(final Queue<T> source, final Collection<T> drain, final int requiredAmount,
+                                      final List<QuadTreeNode<T>> backTraceStack)
     {
-        final Queue<T> drain = node.getItems();
-
         while (drain.size() < requiredAmount)
         {
             final T item = source.poll();
 
-            if (item != null)
-                drain.add(item);
-            else
+            if (item == null)
                 return false;
+
+            drain.add(item);
+
+            for (QuadTreeNode<T> node : backTraceStack)
+                node.decrementNumItems();
         }
 
         return drain.size() == requiredAmount;
@@ -126,6 +133,7 @@ public class QuadTree<T extends QuadTreeItem<T>>
         float h = this.height;
 
         QuadTreeNode<T> currentNode = getRoot();
+        currentNode.incrementNumItems();
 
         for (int i = 0; i < maxSubDiv; i++)
         {
@@ -136,6 +144,7 @@ public class QuadTree<T extends QuadTreeItem<T>>
 
             final QuadTreeDirection direction = getQuadTreeDirection(item, x, y, halfW, halfH);
             currentNode = currentNode.subdivide(direction);
+            currentNode.incrementNumItems();
 
             // move
             if (direction.isE())
@@ -147,6 +156,24 @@ public class QuadTree<T extends QuadTreeItem<T>>
             w = halfW;
             h = halfH;
         }
+
+        final QuadTreeDirection direction = getQuadTreeDirection(item, x, y, w * .5f, h * .5f);
+        final QuadTreeNode<T> leafNode = currentNode.getLeaf(direction);
+        leafNode.incrementNumItems();
+        leafNode.getItems().add(item);
+    }
+
+    private QuadTreeNode<T> getMaxNumItemsNode(final QuadTreeNode<T> node)
+    {
+        final QuadTreeNode<T> nw = node.getChild(QuadTreeDirection.NW);
+        final QuadTreeNode<T> ne = node.getChild(QuadTreeDirection.NE);
+        final QuadTreeNode<T> sw = node.getChild(QuadTreeDirection.SW);
+        final QuadTreeNode<T> se = node.getChild(QuadTreeDirection.SE);
+
+        final QuadTreeNode<T> max1 = (nw.getNumItems() > ne.getNumItems()) ? nw : ne;
+        final QuadTreeNode<T> max2 = (sw.getNumItems() > se.getNumItems()) ? sw : se;
+
+        return (max1.getNumItems() > max2.getNumItems()) ? max1 : max2;
     }
 
     public final Collection<T> take(final int maxNumItems)
@@ -154,14 +181,36 @@ public class QuadTree<T extends QuadTreeItem<T>>
         @SuppressWarnings("unchecked")
         final QuadTreeNode<T> currentRoot = (QuadTreeNode<T>)rootFU.get(this);
 
-        // Fast path (no elements in the tree)
-        if (currentRoot.getItems().isEmpty())
+        if (currentRoot.getNumItems() == 0)
             return Collections.emptyList();
 
-        depthSearchStack.add(root);
+        final List<QuadTreeNode<T>> backTraceStack = new ArrayList<>(maxSubDiv);
+        backTraceStack.add(currentRoot);
 
 
         final List<T> items = new ArrayList<>(maxNumItems);
+
+        QuadTreeNode<T> currentNode = currentRoot;
+        while (!backTraceStack.isEmpty())
+        {
+            while (!(currentNode.isLeaf()))
+            {
+                currentNode = getMaxNumItemsNode(currentNode);
+                backTraceStack.add(currentNode);
+            }
+
+            if (takeItemsFromNode(currentNode.getItems(), items, maxNumItems, backTraceStack))
+            {
+                // Search complete
+                return items;
+            }
+
+            while(!backTraceStack.isEmpty() &&
+                    (currentNode = backTraceStack.remove(backTraceStack.size() - 1)).getNumItems() == 0)
+            {
+            }
+        }
+
         return items;
     }
 }

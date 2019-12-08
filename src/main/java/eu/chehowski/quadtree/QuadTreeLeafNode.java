@@ -1,6 +1,5 @@
 package eu.chehowski.quadtree;
 
-import java.util.Collection;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -25,6 +24,12 @@ public class QuadTreeLeafNode<T extends QuadTreeItem<T>> extends AbstractQuadTre
     public QuadTreeNode<T> subdivide(QuadTreeDirection direction)
     {
         return QuadTreeEmptyNode.emptyNode();
+    }
+
+    @Override
+    public QuadTreeNode<T> getLeaf(QuadTreeDirection direction)
+    {
+        return this;
     }
 
     @Override
