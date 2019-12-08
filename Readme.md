@@ -1,7 +1,7 @@
 ### Matchmaking
 
 Okay, I'm *not* a high-load backend developer to any degree. 
-Anyway, this is my brave attempt to make a scalable implementation of the online matchmaking for online games.
+Anyway, this is my brave attempt to make a scalable implementation of a matchmaking for online games.
 
 ### The problem
 The service needs to handle `{appDomain}/addUser?name=[name]&skill=[double]&latency=[double]` requests, adding new players to the polling queue.

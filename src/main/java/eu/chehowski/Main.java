@@ -3,7 +3,6 @@ package eu.chehowski;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import eu.chehowski.handler.AddUserHandler;
-import eu.chehowski.handler.ListUsersHandler;
 import eu.chehowski.model.GroupInfo;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.ContextHandler;
@@ -26,14 +25,10 @@ public class Main
         final ContextHandler addUserContext = new ContextHandler("/addUser");
         addUserContext.setHandler(new AddUserHandler());
 
-        final ContextHandler listUsersContext = new ContextHandler("/listUsers");
-        listUsersContext.setHandler(new ListUsersHandler());
-
         // add new handlers if necessary
 
         server.setHandler(new ContextHandlerCollection(
-                addUserContext,
-                listUsersContext
+                addUserContext
         ));
         return server;
     }
