@@ -21,6 +21,8 @@ As for the experienced *game engine programmer*, I know that [Quad Trees](https:
 
 > One may also use **N**-dimensional trees to manage **N**-dimensional points placed in cubes or tesseracts instead of 2D surfaces.
 
+<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8b/Point_quadtree.svg/1024px-Point_quadtree.svg.png" alt="drawing" width="400"/>
+
 The idea is to construct a quad tree and connect a simple atomic counter to each its node, representing the amount of records in the certain part of 2D space.
 Then you may simply compare counter values to determine the most load part of space to take from that part first to make results more uniform.
 
@@ -37,5 +39,5 @@ The approaches that could be used further to find other players:
 - **[-]** Jetty as the web-server isn’t probably a good choice. By the way it can perfectly handle requests and could be easily replaced with another web-server since the bridge between the jetty and the matchmaker is sensible and thick.
 
 ### Conclusion
-I believe that spartial approach is the best possible way to manage such objects.
-Although my solution did not implemented all possible optimizations it has no sensible weak architectural points.
+I believe that spartial approach is the best possible way to manage such structures.
+Although my solution did not implemented all possible optimizations it has no sensible weak architectural points and all these optimizations could be added in future.
