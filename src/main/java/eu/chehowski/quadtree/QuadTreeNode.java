@@ -1,17 +1,33 @@
 package eu.chehowski.quadtree;
 
-import java.util.Collection;
+import eu.chehowski.annotations.ThreadSafe;
 
-public interface QuadTreeNode<T>
+import java.util.Collection;
+import java.util.Collections;
+import java.util.function.Function;
+
+/**
+ * Cell arrangement:
+ * | NW | NE |
+ * | SW | SE |
+ *
+ * @param <T>
+ */
+public interface QuadTreeNode<T extends QuadTreeItem<T>>
 {
+
     /**
      * Checks whether the current node is a leaf node.
+     * - Leaf nodes has items, so {@link #getItems()} has items in it
+     * - Leaf nodes can not subdivide, {@link #getNW()}, {@link #getNE()}, {@link #getSW()}, {@link #getSE()}
+     *      so they return null.
      *
-     * @return
+     * @return True for leaf, non-subdivide nodes.
      */
     boolean isLeaf();
 
-    boolean isEmpty();
+    boolean isDummy();
+
 
     /**
      * Get the NORTH-WEST or an UPPER-LEFT sub-node.
@@ -43,11 +59,37 @@ public interface QuadTreeNode<T>
      */
     QuadTreeNode<T> getSE();
 
+
+    QuadTreeNode<T> getChild(final QuadTreeDirection direction);
+
+    QuadTreeNode<T> subdivide(final QuadTreeDirection direction);
+
     /**
      * Returns the collection of items in this quad tree node. Always returns an empty collection for non-leaf
      * nodes.
      *
      * @return A collection of items.
      */
-    Collection<T> getItems();
+    default Collection<T> getItems()
+    {
+        return Collections.emptyList();
+    }
+
+
+    // num items management
+    @ThreadSafe
+    default void incrementNumItems()
+    {
+    }
+
+    @ThreadSafe
+    default void decrementNumItems()
+    {
+    }
+
+    @ThreadSafe
+    default int getNumItems()
+    {
+        return 0;
+    }
 }

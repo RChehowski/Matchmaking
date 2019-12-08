@@ -5,6 +5,7 @@ import java.io.PrintWriter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import eu.chehowski.Matchmaker;
 import eu.chehowski.model.PlayerInfo;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.AbstractHandler;
@@ -41,23 +42,28 @@ public class AddUserHandler extends AbstractHandler
     }
 
     @Override
-    public void handle(String target, Request baseRequest,
-                       HttpServletRequest request, HttpServletResponse response)
+    public void handle(final String target,
+                       final Request baseRequest,
+                       final HttpServletRequest request,
+                       final HttpServletResponse response)
             throws IOException
     {
         final PlayerInfo playerInfo = getPlayerInfoFromRequest(request);
         final PrintWriter out = response.getWriter();
 
         response.setContentType("text/html; charset=utf-8");
-        if (playerInfo == null)
-        {
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            out.println("<h1>Bad request (unable to parse player info)</h1>");
-        }
-        else
+        if (playerInfo != null)
         {
             response.setStatus(HttpServletResponse.SC_OK);
             out.println("<h1>Added a user: " + playerInfo + "</h1>");
+
+            // register the player info for the matchmaking
+            Matchmaker.getInstance().addPlayerInfo(playerInfo);
+        }
+        else
+        {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            out.println("<h1>Bad request (unable to parse player info)</h1>");
         }
 
         baseRequest.setHandled(true);

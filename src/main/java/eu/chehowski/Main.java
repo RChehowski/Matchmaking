@@ -1,6 +1,9 @@
 package eu.chehowski;
 
 import eu.chehowski.handler.AddUserHandler;
+import eu.chehowski.handler.ListUsersHandler;
+import eu.chehowski.poller.AbstractPoller;
+import eu.chehowski.poller.PrinterPoller;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
@@ -14,19 +17,25 @@ public class Main
         final ContextHandler addUserContext = new ContextHandler("/addUser");
         addUserContext.setHandler(new AddUserHandler());
 
+        final ContextHandler listUsersContext = new ContextHandler("/listUsers");
+        listUsersContext.setHandler(new ListUsersHandler());
 
-        final ContextHandlerCollection contexts = new ContextHandlerCollection(
-                addUserContext
-        );
+        // add new handlers if necessary
 
-        server.setHandler(contexts);
+        server.setHandler(new ContextHandlerCollection(
+                addUserContext,
+                listUsersContext
+        ));
         return server;
     }
 
     public static void main(String[] args) throws Exception
     {
-        int port = 8080;
-        Server server = createServer(port);
+        final AbstractPoller poller = new PrinterPoller(5000);
+
+
+
+        final Server server = createServer(8080);
         server.start();
         server.dumpStdErr();
         server.join();

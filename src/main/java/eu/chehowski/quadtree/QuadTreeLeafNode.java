@@ -2,19 +2,12 @@ package eu.chehowski.quadtree;
 
 import java.util.Collection;
 
-public class QuadTreeLeafNode<T> implements QuadTreeNode<T>
+public class QuadTreeLeafNode<T extends QuadTreeItem<T>> extends AbstractQuadTreeNode<T>
 {
-
     @Override
     public boolean isLeaf()
     {
-        return false;
-    }
-
-    @Override
-    public boolean isEmpty()
-    {
-        return false;
+        return true;
     }
 
     @Override
@@ -40,6 +33,7 @@ public class QuadTreeLeafNode<T> implements QuadTreeNode<T>
     {
         return null;
     }
+
 
     @Override
     public Collection<T> getItems()

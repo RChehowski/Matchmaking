@@ -3,23 +3,27 @@ package eu.chehowski.quadtree;
 import java.util.Collection;
 import java.util.Collections;
 
-public final class QuadTreeEmptyNode<T> implements QuadTreeNode<T>
+/**
+ *
+ * @param <T>
+ */
+public final class QuadTreeEmptyNode<T extends QuadTreeItem<T>> implements QuadTreeNode<T>
 {
     private static final QuadTreeEmptyNode<?> instance = new QuadTreeEmptyNode<>();
 
     private QuadTreeEmptyNode()
     {
-
     }
 
     @Override
     public boolean isLeaf()
     {
+        // empty nodes are always leaves
         return true;
     }
 
     @Override
-    public boolean isEmpty()
+    public boolean isDummy()
     {
         return true;
     }
@@ -27,37 +31,30 @@ public final class QuadTreeEmptyNode<T> implements QuadTreeNode<T>
     @Override
     public QuadTreeNode<T> getNW()
     {
-        return this;
+        return null;
     }
 
     @Override
     public QuadTreeNode<T> getNE()
     {
-        return this;
+        return null;
     }
 
     @Override
     public QuadTreeNode<T> getSW()
     {
-        return this;
+        return null;
     }
 
     @Override
     public QuadTreeNode<T> getSE()
     {
-        return this;
+        return null;
     }
-
-    @Override
-    public Collection<T> getItems()
-    {
-        return Collections.emptyList();
-    }
-
 
     @SuppressWarnings("unchecked")
-    public static <T> QuadTreeEmptyNode<T> emptyNode()
+    public static <T extends QuadTreeItem<T>> QuadTreeNode<T> emptyNode()
     {
-        return (QuadTreeEmptyNode<T>)instance;
+        return (QuadTreeNode<T>)instance;
     }
 }

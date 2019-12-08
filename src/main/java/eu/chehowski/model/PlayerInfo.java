@@ -1,28 +1,21 @@
 package eu.chehowski.model;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
+import eu.chehowski.quadtree.QuadTreeItem;
 
 import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 
-public final class PlayerInfo
+public final class PlayerInfo implements QuadTreeItem<PlayerInfo>
 {
     private final String name;
     private final float latency;
     private final float skill;
-
-    private volatile int collectionCyclesField = 0;
-    private static final AtomicIntegerFieldUpdater<PlayerInfo> collectionCycles =
-            AtomicIntegerFieldUpdater.newUpdater(PlayerInfo.class, "collectionCyclesField");
-
-//    private static final
 
     public PlayerInfo(final String name, final float latency, final float skill)
     {
         this.name = name;
         this.latency = latency;
         this.skill = skill;
-
-
     }
 
     @JsonGetter("name")
@@ -53,9 +46,15 @@ public final class PlayerInfo
         '}';
     }
 
-
-    final void markSurvivedOnCollectionCycle()
+    @Override
+    public float getX()
     {
-        collectionCycles.incrementAndGet(this);
+        return latency;
+    }
+
+    @Override
+    public float getY()
+    {
+        return skill;
     }
 }
