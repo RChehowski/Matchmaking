@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Queue;
 import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
 
 public class QuadTree<T extends QuadTreeItem<T>>
@@ -51,7 +52,7 @@ public class QuadTree<T extends QuadTreeItem<T>>
     }
 
 
-    private void secureRoot()
+    private QuadTreeNode<T> getRoot()
     {
         @SuppressWarnings("unchecked")
         final QuadTreeNode<T> previousRoot = (QuadTreeNode<T>)rootFU.get(this);
@@ -63,6 +64,8 @@ public class QuadTree<T extends QuadTreeItem<T>>
             // root is already updated if the check failed
             rootFU.compareAndSet(this, previousRoot, newRoot);
         }
+
+        return root;
     }
 
     private void rangeCheck(T item, float x, float y, float w, float h)
@@ -89,26 +92,40 @@ public class QuadTree<T extends QuadTreeItem<T>>
 
     private QuadTreeDirection getQuadTreeDirection(T item, float x, float y, float halfW, float halfH)
     {
+        final float itemX = item.getX();
+        final float itemY = item.getY();
+
         if (x < halfW)
             return y < halfH ? QuadTreeDirection.SW : QuadTreeDirection.NW;
         else
             return y < halfH ? QuadTreeDirection.SE : QuadTreeDirection.NE;
     }
 
+    private boolean takeItemsFromNode(final Queue<T> source, final QuadTreeNode<T> node, final int requiredAmount)
+    {
+        final Queue<T> drain = node.getItems();
+
+        while (drain.size() < requiredAmount)
+        {
+            final T item = source.poll();
+
+            if (item != null)
+                drain.add(item);
+            else
+                return false;
+        }
+
+        return drain.size() == requiredAmount;
+    }
+
     public final void add(final T item)
     {
-        secureRoot();
-
-
-        final float itemX = item.getX();
-        final float itemY = item.getY();
-
-
         float x = this.x;
         float y = this.y;
         float w = this.width;
         float h = this.height;
 
+        QuadTreeNode<T> currentNode = getRoot();
 
         for (int i = 0; i < maxSubDiv; i++)
         {
@@ -118,6 +135,7 @@ public class QuadTree<T extends QuadTreeItem<T>>
             final float halfH = h * .5f;
 
             final QuadTreeDirection direction = getQuadTreeDirection(item, x, y, halfW, halfH);
+            currentNode = currentNode.subdivide(direction);
 
             // move
             if (direction.isE())

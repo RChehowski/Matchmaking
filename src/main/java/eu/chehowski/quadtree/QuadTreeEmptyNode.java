@@ -29,28 +29,17 @@ public final class QuadTreeEmptyNode<T extends QuadTreeItem<T>> implements QuadT
     }
 
     @Override
-    public QuadTreeNode<T> getNW()
+    public QuadTreeNode<T> getChild(QuadTreeDirection direction)
+    {
+        return this;
+    }
+
+    @Override
+    public QuadTreeNode<T> subdivide(QuadTreeDirection direction)
     {
         return null;
     }
 
-    @Override
-    public QuadTreeNode<T> getNE()
-    {
-        return null;
-    }
-
-    @Override
-    public QuadTreeNode<T> getSW()
-    {
-        return null;
-    }
-
-    @Override
-    public QuadTreeNode<T> getSE()
-    {
-        return null;
-    }
 
     @SuppressWarnings("unchecked")
     public static <T extends QuadTreeItem<T>> QuadTreeNode<T> emptyNode()

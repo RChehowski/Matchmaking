@@ -3,8 +3,10 @@ package eu.chehowski.model;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import eu.chehowski.util.KahanAverage;
 
+import java.time.Instant;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.stream.Collectors;
 
 /**
  * A model class defining matchmaking result.
@@ -63,24 +65,31 @@ public final class GroupInfo
         this.players = Collections.emptyList();
     }
 
-//    public GroupInfo(final long groupNumber, PlayerInfo... playerInfos)
-//    {
-//        // Stream.average() uses Kahan's algorithm to reduce numerical error while computing an average,
-//        // thus it is unwanted to get rid of there streams
-//        // @see https://en.wikipedia.org/wiki/Kahan_summation_algorithm
-//
-//        final int numPlayerInfos = playerInfos.length;
-//
-//        final KahanAverage avg = new KahanAverage(numPlayerInfos);
-//        for (int i = 0; i < numPlayerInfos; i++)
-//            avg.update(playerInfos[i].getLatency());
-//        avgLatency = avg.get();
-//
-//        avg.reset();
-//        for (int i = 0; i < numPlayerInfos; i++)
-//            avg.update(playerInfos[i].getSkill());
-//        avgSkill = avg.get();
-//    }
+    public GroupInfo(final long groupNumber, final Collection<PlayerInfo> players)
+    {
+        this.groupNumber = groupNumber;
+
+        // Stream.average() uses Kahan's algorithm to reduce numerical error while computing an average,
+        // thus it is unwanted to get rid of there streams (unless we implement a reliable avg algorithm)
+        // @see https://en.wikipedia.org/wiki/Kahan_summation_algorithm
+        this.minSkill = (float)players.stream().mapToDouble(PlayerInfo::getSkill).min().orElse(-1.0);
+        this.maxSkill = (float)players.stream().mapToDouble(PlayerInfo::getSkill).max().orElse(-1.0);
+        this.avgSkill = (float)players.stream().mapToDouble(PlayerInfo::getSkill).average().orElse(-1.0);
+
+        this.minLatency = (float)players.stream().mapToDouble(PlayerInfo::getLatency).min().orElse(-1.0);
+        this.maxLatency = (float)players.stream().mapToDouble(PlayerInfo::getLatency).max().orElse(-1.0);
+        this.avgLatency = (float)players.stream().mapToDouble(PlayerInfo::getLatency).average().orElse(-1.0);
+
+        final long timeNow = Instant.now().toEpochMilli();
+        this.minTimeInQueue = players.stream().mapToLong(x -> timeNow - x.getTimeCreated()).min().orElse(-1L);
+        this.maxTimeInQueue = players.stream().mapToLong(x -> timeNow - x.getTimeCreated()).max().orElse(-1L);
+        this.avgTimeInQueue = Math.round(players.stream().mapToDouble(x -> (double)(timeNow - x.getTimeCreated()))
+                .average().orElse(-1.0));
+
+        // retrieve players
+        this.players = Collections.unmodifiableCollection(players.stream().map(PlayerInfo::getName)
+                .collect(Collectors.toList()));
+    }
 
     @JsonGetter("group_number")
     public long getGroupNumber()

@@ -10,19 +10,6 @@ public enum QuadTreeDirection
     SW,
     SE;
 
-    public <T extends QuadTreeItem<T>> QuadTreeNode<T> translate(final QuadTreeNode<T> node)
-    {
-        switch (this)
-        {
-            case NW: return node.getNW();
-            case NE: return node.getNE();
-            case SW: return node.getSW();
-            case SE: return node.getSE();
-        }
-
-        throw new IllegalStateException("Unsupported option: " + this.toString());
-    }
-
     public int getPriority()
     {
         // by default, the priority is the same as the current value's ordinal in the enum

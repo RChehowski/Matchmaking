@@ -1,6 +1,5 @@
 package eu.chehowski.quadtree;
 
-import java.util.Collection;
 import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
 
 public final class QuadTreeSubNode<T extends QuadTreeItem<T>> extends AbstractQuadTreeNode<T>
@@ -34,30 +33,6 @@ public final class QuadTreeSubNode<T extends QuadTreeItem<T>> extends AbstractQu
     public boolean isLeaf()
     {
         return false;
-    }
-
-    @Override
-    public QuadTreeNode<T> getNW()
-    {
-        return nw;
-    }
-
-    @Override
-    public QuadTreeNode<T> getNE()
-    {
-        return ne;
-    }
-
-    @Override
-    public QuadTreeNode<T> getSW()
-    {
-        return sw;
-    }
-
-    @Override
-    public QuadTreeNode<T> getSE()
-    {
-        return se;
     }
 
 
