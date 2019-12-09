@@ -1,7 +1,7 @@
 ### Matchmaking
 
-Okay, I'm *not* a high-load backend developer to any degree. 
-Anyway, this is my brave attempt to make a scalable implementation of a matchmaking for online games.
+Although I'm *not* a high-load backend developer to any degree,
+I committed brave attempt to make a scalable implementation of a matchmaking for online games.
 
 ### The problem
 The service needs to handle `{appDomain}/addUser?name=[name]&skill=[double]&latency=[double]` requests, adding new players to the polling queue.
@@ -15,7 +15,7 @@ I'm pretty sure that it was a good idea to combine the entire list of sophistica
 So if we have **two** parameters and we need to look through them, the best possible and the most obvious *for me* way is to construct a lookup structure, where it will be easy to perform such operation.
 By the way, one may use a simple sqrt((x<sub>1</sub>-x<sub>2</sub>)<sup>2</sup>+(y<sub>1</sub>-y<sub>2</sub>)<sup>2</sup>) formula to calculate the distance between two points, but this will require as many as **O**(N<sup>2</sup>) operations, where **N** is the amount of players enqueued.
 
-> The optimized version of this brute comparison approach may work as fast as **O**(**N**), but it will require extra memory to implement some technique, such as the [card table](https://msdnshared.blob.core.windows.net/media/TNBlogsFS/BlogFileStorage/blogs_msdn/abhinaba/WindowsLiveWriter/BackToBasicsGenerationalGarbageCollectio_115F4/image_18.png) to look through data to know the load weight of a certain part of space. 
+> The optimized version of this brute comparison approach may work as fast as **O**(**N**), but it will require extra memory to implement some technique, such as the [card table](https://msdnshared.blob.core.windows.net/media/TNBlogsFS/BlogFileStorage/blogs_msdn/abhinaba/WindowsLiveWriter/BackToBasicsGenerationalGarbageCollectio_115F4/image_18.png) to look through the data to know the load weight of a certain part of space. 
 
 As for the experienced *game engine programmer*, I know that [Quad Trees](https://en.wikipedia.org/wiki/Quadtree) as the special case of [KD-trees](https://en.wikipedia.org/wiki/K-d_tree) could be used on such purpose.
 
@@ -23,7 +23,7 @@ As for the experienced *game engine programmer*, I know that [Quad Trees](https:
 
 <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8b/Point_quadtree.svg/1024px-Point_quadtree.svg.png" alt="drawing" width="400"/>
 
-The idea is to construct a quad tree and connect a simple atomic counter to each its node at each its level, representing the amount of records in the certain part of 2D space.
+The idea is to construct a quad tree and connect a simple atomic counter hierarchically, representing the amount of records in the certain part of 2D space.
 Then you may simply compare counter values to determine the most loaded part of 2D space to take from that part first to make results more uniform.
 
 The approaches that could be used further to find other players:
@@ -37,6 +37,7 @@ The approaches that could be used further to find other players:
 - **[+]** It’s all thread-safe and lock-free. Entries can be placed concurrently via the multi-threaded server and player groups can be polled in the same time
 - **[-]** It does not care about how many time player spent in the queue. However it could be managed by either adding matchmaker generations (a set of trees) or by counting age of the part of space. The system requires some extra parameters to be fine-tuned and thus is not implemented at the current state of the art.
 - **[-]** Jetty as the web-server isn’t probably a good choice. By the way it can perfectly handle requests and could be easily replaced with another web-server since the bridge between the jetty and the matchmaker is sensible and thick.
+- **[-]** At the current state of the art, search may be a bit crude. However it could be greatly improved in future thank to the structure of the quad tree.
 
 ### Conclusion
 I believe that spartial approach is the best possible way to manage such structures.
