@@ -15,8 +15,8 @@ import java.util.TimerTask;
 
 public class Main
 {
-    private static final int POLL_PERIOD = 10000;
-    private static final int PLAYERS_IN_GROUP = 2;
+    private static final int POLL_PERIOD = 5000;
+    private static final int PLAYERS_IN_GROUP = 10;
 
     public static Server createServer(int port)
     {
