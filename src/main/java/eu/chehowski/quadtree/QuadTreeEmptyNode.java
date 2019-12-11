@@ -4,7 +4,7 @@ package eu.chehowski.quadtree;
  *
  * @param <T>
  */
-public final class QuadTreeEmptyNode<T extends QuadTreeItem<T>> implements QuadTreeNode<T>
+public final class QuadTreeEmptyNode<T extends QuadTreeItem> implements QuadTreeNode<T>
 {
     private static final QuadTreeEmptyNode<?> instance = new QuadTreeEmptyNode<>();
 
@@ -44,7 +44,7 @@ public final class QuadTreeEmptyNode<T extends QuadTreeItem<T>> implements QuadT
     }
 
     @SuppressWarnings("unchecked")
-    public static <T extends QuadTreeItem<T>> QuadTreeNode<T> emptyNode()
+    public static <T extends QuadTreeItem> QuadTreeNode<T> emptyNode()
     {
         return (QuadTreeNode<T>)instance;
     }

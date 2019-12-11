@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
 
-public class QuadTree<T extends QuadTreeItem<T>>
+public class QuadTree<T extends QuadTreeItem>
 {
     private static final int THRESH_TO_SUBDIVIDE = 10;
 
@@ -86,24 +86,13 @@ public class QuadTree<T extends QuadTreeItem<T>>
                     " is above the upper bound " + (y + h));
     }
 
-    private QuadTreeDirection getQuadTreeDirection(T item, float x, float y, float halfW, float halfH)
+    private QuadTreeDirection getQuadTreeDirection(final T item, final float x, final float y,
+                                                   final float halfWidth, final float halfHeight)
     {
-        final float itemX = item.getX();
-        final float itemY = item.getY();
+        final boolean isW = item.getX() < (x + halfWidth);
+        final boolean isH = item.getY() < (y + halfHeight);
 
-        if (itemX < (x + halfW))
-        {
-            return (itemY < (y + halfW)) ? QuadTreeDirection.SW : QuadTreeDirection.NW;
-        }
-        else
-        {
-            return (itemY < (y + halfW)) ? QuadTreeDirection.SE : QuadTreeDirection.NE;
-        }
-
-//        if (x < halfW)
-//            return y < halfH ? QuadTreeDirection.SW : QuadTreeDirection.NW;
-//        else
-//            return y < halfH ? QuadTreeDirection.SE : QuadTreeDirection.NE;
+        return QuadTreeDirection.select(isW, isH);
     }
 
     private boolean takeItemsFromNode(final Queue<T> source, final Collection<T> drain, final int requiredAmount,
@@ -201,16 +190,20 @@ public class QuadTree<T extends QuadTreeItem<T>>
 
             if (takeItemsFromNode(currentNode.getItems(), items, maxNumItems, backTraceStack))
             {
-                // Search complete
+                // Search complete, N items found
                 return items;
             }
 
-            while(!backTraceStack.isEmpty() &&
-                    (currentNode = backTraceStack.remove(backTraceStack.size() - 1)).getNumItems() == 0)
+            // Go upwards to find a new root
+            int numItemsRemaining = currentNode.getNumItems();
+            while (!backTraceStack.isEmpty() && (numItemsRemaining == 0))
             {
+                currentNode = backTraceStack.remove(backTraceStack.size() - 1);
+                numItemsRemaining = currentNode.getNumItems();
             }
         }
 
+        // We were unable to find the required amount of items
         return items;
     }
 }

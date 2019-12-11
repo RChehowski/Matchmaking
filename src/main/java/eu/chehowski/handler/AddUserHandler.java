@@ -1,5 +1,8 @@
 package eu.chehowski.handler;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import eu.chehowski.Matchmaker;
 import eu.chehowski.model.PlayerInfo;
 import org.eclipse.jetty.server.Request;
@@ -52,10 +55,11 @@ public class AddUserHandler extends AbstractHandler
         final PrintWriter out = response.getWriter();
 
         response.setContentType("text/html; charset=utf-8");
+
         if (playerInfo != null)
         {
             response.setStatus(HttpServletResponse.SC_OK);
-            out.println("<h1>Added a user: " + playerInfo + "</h1>");
+            out.println(playerInfo.toString());
 
             // register the player info for the matchmaking
             Matchmaker.getInstance().addPlayerInfo(playerInfo);

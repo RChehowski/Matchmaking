@@ -35,4 +35,12 @@ public enum QuadTreeDirection
     {
         return (this == NE) || (this == SE);
     }
+
+    public static QuadTreeDirection select(final boolean isW, final boolean isS)
+    {
+        if (isW)
+            return isS ? QuadTreeDirection.SW : QuadTreeDirection.NW;
+        else
+            return isS ? QuadTreeDirection.SE : QuadTreeDirection.NE;
+    }
 }

@@ -12,7 +12,7 @@ import java.util.Queue;
  *
  * @param <T>
  */
-public interface QuadTreeNode<T extends QuadTreeItem<T>>
+public interface QuadTreeNode<T extends QuadTreeItem>
 {
 
     /**

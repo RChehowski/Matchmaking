@@ -2,7 +2,7 @@ package eu.chehowski.quadtree;
 
 import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
 
-public final class QuadTreeSubNode<T extends QuadTreeItem<T>> extends AbstractQuadTreeNode<T>
+public final class QuadTreeSubNode<T extends QuadTreeItem> extends AbstractQuadTreeNode<T>
 {
     private volatile QuadTreeNode<T> nw = QuadTreeEmptyNode.emptyNode();
     private volatile QuadTreeNode<T> ne = QuadTreeEmptyNode.emptyNode();

@@ -9,7 +9,7 @@ import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
  *
  * @param <T> Type of the item.
  */
-public abstract class AbstractQuadTreeNode<T extends QuadTreeItem<T>> implements QuadTreeNode<T>
+public abstract class AbstractQuadTreeNode<T extends QuadTreeItem> implements QuadTreeNode<T>
 {
     /**
      * There are too many instances of the {@link AbstractQuadTreeNode} could exist in the program

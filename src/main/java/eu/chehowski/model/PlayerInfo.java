@@ -2,10 +2,13 @@ package eu.chehowski.model;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import eu.chehowski.quadtree.QuadTreeItem;
+import org.codehaus.jackson.annotate.JsonIgnore;
 
+import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.util.Date;
 
-public final class PlayerInfo implements QuadTreeItem<PlayerInfo>
+public final class PlayerInfo implements QuadTreeItem
 {
     private final String name;
     private final float latency;
@@ -22,25 +25,21 @@ public final class PlayerInfo implements QuadTreeItem<PlayerInfo>
         this.timeCreated = Instant.now().toEpochMilli();
     }
 
-    @JsonGetter("name")
     public final String getName()
     {
         return name;
     }
 
-    @JsonGetter("latency")
     public final float getLatency()
     {
         return latency;
     }
 
-    @JsonGetter("skill")
     public final float getSkill()
     {
         return skill;
     }
 
-    @JsonGetter("time_created")
     public long getTimeCreated()
     {
         return timeCreated;
@@ -49,14 +48,26 @@ public final class PlayerInfo implements QuadTreeItem<PlayerInfo>
     @Override
     public float getX()
     {
-        // latency will be `x` characteristic for the quad tree
+        // latency will be `x` parameter for the quad tree
         return latency;
     }
 
     @Override
     public float getY()
     {
-        // skill will be `y` characteristic for the quad tree
+        // skill will be `y` parameter for the quad tree
         return skill;
+    }
+
+    @Override
+    public String toString() {
+        final Date date = new Date(getTimeCreated());
+
+        return "PlayerInfo{" +
+                "name='" + name + '\'' +
+                ", latency=" + latency +
+                ", skill=" + skill +
+                ", timeCreated=" + date.toString() +
+                '}';
     }
 }

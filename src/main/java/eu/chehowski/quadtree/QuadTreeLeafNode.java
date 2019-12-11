@@ -3,7 +3,7 @@ package eu.chehowski.quadtree;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-public class QuadTreeLeafNode<T extends QuadTreeItem<T>> extends AbstractQuadTreeNode<T>
+public class QuadTreeLeafNode<T extends QuadTreeItem> extends AbstractQuadTreeNode<T>
 {
     private final Queue<T> items = new ConcurrentLinkedQueue<>();
 
